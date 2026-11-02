@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Theme color tokens ----
+   Each theme sets CSS custom properties consumed by the Tailwind
+   semantic colors (see tailwind.config.js). Switching the
+   data-theme attribute on <html> restyles the entire app. */
+
+:root,
+[data-theme='light'] {
+  --c-bg: #f1f5f9;
+  --c-surface: #ffffff;
+  --c-surface-2: #f8fafc;
+  --c-border: #e2e8f0;
+  --c-text: #0f172a;
+  --c-text-muted: #64748b;
+  --c-primary: #2563eb;
+  --c-primary-text: #ffffff;
+  --c-accent: #1d4ed8;
+}
+
+[data-theme='dark'] {
+  --c-bg: #0f172a;
+  --c-surface: #1e293b;
+  --c-surface-2: #334155;
+  --c-border: #475569;
+  --c-text: #f1f5f9;
+  --c-text-muted: #94a3b8;
+  --c-primary: #3b82f6;
+  --c-primary-text: #ffffff;
+  --c-accent: #60a5fa;
+}
+
+[data-theme='ocean'] {
+  --c-bg: #e0f2fe;
+  --c-surface: #f0f9ff;
+  --c-surface-2: #e0f2fe;
+  --c-border: #7dd3fc;
+  --c-text: #0c4a6e;
+  --c-text-muted: #0369a1;
+  --c-primary: #0284c7;
+  --c-primary-text: #ffffff;
+  --c-accent: #0ea5e9;
+}
+
+[data-theme='forest'] {
+  --c-bg: #ecfdf5;
+  --c-surface: #f0fdf4;
+  --c-surface-2: #d1fae5;
+  --c-border: #6ee7b7;
+  --c-text: #064e3b;
+  --c-text-muted: #047857;
+  --c-primary: #059669;
+  --c-primary-text: #ffffff;
+  --c-accent: #10b981;
+}
+
+[data-theme='sunset'] {
+  --c-bg: #fff7ed;
+  --c-surface: #fffbeb;
+  --c-surface-2: #ffedd5;
+  --c-border: #fdba74;
+  --c-text: #7c2d12;
+  --c-text-muted: #c2410c;
+  --c-primary: #ea580c;
+  --c-primary-text: #ffffff;
+  --c-accent: #f97316;
+}
+
+[data-theme='slate'] {
+  --c-bg: #f4f4f5;
+  --c-surface: #fafafa;
+  --c-surface-2: #e4e4e7;
+  --c-border: #d4d4d8;
+  --c-text: #27272a;
+  --c-text-muted: #71717a;
+  --c-primary: #475569;
+  --c-primary-text: #ffffff;
+  --c-accent: #64748b;
+}
+
+[data-theme='midnight'] {
+  --c-bg: #020617;
+  --c-surface: #111827;
+  --c-surface-2: #1f2937;
+  --c-border: #374151;
+  --c-text: #e5e7eb;
+  --c-text-muted: #9ca3af;
+  --c-primary: #6366f1;
+  --c-primary-text: #ffffff;
+  --c-accent: #818cf8;
+}
+
+/* ---- Base element styling ---- */
+body {
+  margin: 0;
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Thin, theme-aware scrollbars */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--c-border);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Reusable component classes */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-on-primary hover:opacity-90;
+  }
+  .btn-secondary {
+    @apply btn bg-surface-2 text-content border border-line hover:opacity-80;
+  }
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600;
+  }
+  .card {
+    @apply bg-surface border border-line rounded-lg shadow-sm;
+  }
+  .input {
+    @apply w-full rounded-md border border-line bg-surface-2 px-3 py-2 text-content placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+  .label {
+    @apply block text-sm font-medium text-content mb-1;
+  }
+}

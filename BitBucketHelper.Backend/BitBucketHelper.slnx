@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../BitBucketHelper.Launcher/BitBucketHelper.Launcher.csproj" />
+  <Project Path="BitBucketHelper.Backend/BitBucketHelper.Backend.csproj" />
+</Solution>
