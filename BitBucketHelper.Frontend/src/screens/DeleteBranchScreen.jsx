@@ -5,6 +5,7 @@ import CheckboxList from '../components/CheckboxList.jsx'
 import ResultSummary from '../components/ResultSummary.jsx'
 import { useConfig } from '../hooks/useConfig.js'
 import { deleteBranches } from '../api/client.js'
+import { filterFeatureBranches } from '../utils/branches.js'
 
 export default function DeleteBranchScreen() {
   const { spks, reposBySpk, branches, loading, error } = useConfig()
@@ -82,7 +83,8 @@ export default function DeleteBranchScreen() {
 
         <div>
           <label className="label">Branch to Delete</label>
-          <BranchSelect branches={branches} value={branchName} onChange={setBranchName} placeholder="Select or type the branch to delete…" />
+          <BranchSelect branches={filterFeatureBranches(branches)} value={branchName} onChange={setBranchName} placeholder="Select or type a feature branch to delete…" />
+          <p className="mt-1 text-xs text-muted">Protected branches (main, master, develop, release, etc.) are hidden.</p>
         </div>
 
         <label className="flex items-center gap-2 text-sm">

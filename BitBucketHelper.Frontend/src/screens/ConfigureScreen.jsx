@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import ThemePreview from '../components/ThemePreview.jsx'
 import EditableTable from '../components/EditableTable.jsx'
+import SpkRepoMappingEditor from '../components/SpkRepoMappingEditor.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 import { THEMES } from '../themes.js'
 import {
@@ -178,20 +179,10 @@ export default function ConfigureScreen() {
       {/* ---------- SPK / Repo mapping ---------- */}
       <section className="card p-5">
         <h3 className="mb-4 text-sm font-semibold">SPK / Repo Mapping</h3>
-        <EditableTable
+        <SpkRepoMappingEditor
           ref={spkTableRef}
-          columns={[
-            { key: 'spk', label: 'SPK', placeholder: 'SPK name', autoFocus: true },
-            { key: 'projectKey', label: 'Project Key', placeholder: 'PROJ' },
-            { key: 'repoSlug', label: 'Repo Slug', placeholder: 'repo-slug' },
-            { key: 'repoName', label: 'Repo Name', placeholder: 'Display name' },
-          ]}
-          rows={repoConfig.spkRepoMappings}
+          mappings={repoConfig.spkRepoMappings}
           onChange={(rows) => setRepoConfig((c) => ({ ...c, spkRepoMappings: rows }))}
-          addButtons={[
-            { label: 'Add SPK', defaults: { spk: '' } },
-            { label: 'Add Repo', defaults: {} },
-          ]}
         />
         <div className="mt-4 flex justify-end">
           <button className="btn-primary" onClick={saveSpkRepoMapping}>Save SPK / Repo Mapping</button>
