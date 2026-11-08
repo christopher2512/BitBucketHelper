@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import ThemePreview from '../components/ThemePreview.jsx'
 import EditableTable from '../components/EditableTable.jsx'
@@ -18,6 +18,10 @@ export default function ConfigureScreen() {
   const [showToken, setShowToken] = useState(false)
   const [loading, setLoading] = useState(true)
   const [msg, setMsg] = useState({ type: '', text: '' })
+
+  // Refs into the editable tables so a section Save can flush an in-progress row edit.
+  const spkTableRef = useRef(null)
+  const reviewerTableRef = useRef(null)
 
   // ---- Load all configs on mount ----
   useEffect(() => {
@@ -46,13 +50,29 @@ export default function ConfigureScreen() {
     }
   }
 
-  // ---- Repo config save ----
-  const saveRepo = async () => {
+  // ---- SPK / Repo mapping save (flushes any in-progress row edit first) ----
+  const saveSpkRepoMapping = async () => {
+    const committed = spkTableRef.current?.commitPendingEdit() ?? repoConfig.spkRepoMappings
+    const configToSave = { ...repoConfig, spkRepoMappings: committed }
+    setRepoConfig(configToSave)
     try {
-      await saveRepoConfig(repoConfig)
-      flash('success', 'Repository configuration saved.')
+      await saveRepoConfig(configToSave)
+      flash('success', 'SPK / Repo mapping saved.')
     } catch {
-      flash('error', 'Failed to save repository configuration.')
+      flash('error', 'Failed to save SPK / Repo mapping.')
+    }
+  }
+
+  // ---- Reviewers save (flushes any in-progress row edit first) ----
+  const saveReviewers = async () => {
+    const committed = reviewerTableRef.current?.commitPendingEdit() ?? repoConfig.reviewers
+    const configToSave = { ...repoConfig, reviewers: committed }
+    setRepoConfig(configToSave)
+    try {
+      await saveRepoConfig(configToSave)
+      flash('success', 'Reviewers saved.')
+    } catch {
+      flash('error', 'Failed to save reviewers.')
     }
   }
 
@@ -159,6 +179,7 @@ export default function ConfigureScreen() {
       <section className="card p-5">
         <h3 className="mb-4 text-sm font-semibold">SPK / Repo Mapping</h3>
         <EditableTable
+          ref={spkTableRef}
           columns={[
             { key: 'spk', label: 'SPK', placeholder: 'SPK name', autoFocus: true },
             { key: 'projectKey', label: 'Project Key', placeholder: 'PROJ' },
@@ -173,7 +194,7 @@ export default function ConfigureScreen() {
           ]}
         />
         <div className="mt-4 flex justify-end">
-          <button className="btn-primary" onClick={saveRepo}>Save Repo Configuration</button>
+          <button className="btn-primary" onClick={saveSpkRepoMapping}>Save SPK / Repo Mapping</button>
         </div>
       </section>
 
@@ -196,6 +217,7 @@ export default function ConfigureScreen() {
       <section className="card p-5">
         <h3 className="mb-4 text-sm font-semibold">Reviewers</h3>
         <EditableTable
+          ref={reviewerTableRef}
           columns={[
             { key: 'name', label: 'Name', placeholder: 'Jane Doe', autoFocus: true },
             { key: 'id', label: 'Id', placeholder: 'bitbucket-user-id' },
@@ -205,7 +227,7 @@ export default function ConfigureScreen() {
           addButtons={[{ label: 'Add Reviewer', defaults: {} }]}
         />
         <div className="mt-4 flex justify-end">
-          <button className="btn-primary" onClick={saveRepo}>Save Repo Configuration</button>
+          <button className="btn-primary" onClick={saveReviewers}>Save Reviewers</button>
         </div>
       </section>
     </div>

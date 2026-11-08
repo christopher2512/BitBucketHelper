@@ -1,14 +1,30 @@
-import { useState } from 'react'
+import { useState, forwardRef, useImperativeHandle } from 'react'
 
 // A table whose rows become editable on double-click.
+// Exposes an imperative `commitPendingEdit()` via its ref so a parent
+// "Save" action can flush an in-progress row edit before persisting.
 // Props:
-//   columns: [{ key, label, placeholder, type }]
+//   columns: [{ key, label, placeholder, type, autoFocus }]
 //   rows: array of row objects
 //   onChange: (rows) => void
-//   addButtons: [{ label, onAdd }]   — buttons that append an editable row
-export default function EditableTable({ columns, rows, onChange, addButtons = [] }) {
+//   addButtons: [{ label, defaults }]
+const EditableTable = forwardRef(function EditableTable({ columns, rows, onChange, addButtons = [] }, ref) {
   const [editingIndex, setEditingIndex] = useState(null)
   const [draft, setDraft] = useState({})
+
+  // Flushes the row currently being edited into the parent state and
+  // returns the resulting rows array (so the caller can persist it
+  // without waiting for React's async state update to settle).
+  useImperativeHandle(ref, () => ({
+    commitPendingEdit: () => {
+      if (editingIndex === null) return rows
+      const next = [...rows]
+      next[editingIndex] = { ...draft }
+      onChange(next)
+      setEditingIndex(null)
+      return next
+    },
+  }))
 
   const startEdit = (index) => {
     setEditingIndex(index)
@@ -64,7 +80,7 @@ export default function EditableTable({ columns, rows, onChange, addButtons = []
               {columns.map((c) => (
                 <th key={c.key} className="px-3 py-2 font-medium">{c.label}</th>
               ))}
-              <th className="px-3 py-2 font-medium text-right">Actions</th>
+              <th className="px-3 py-2 font-medium text-right">Row</th>
             </tr>
           </thead>
           <tbody>
@@ -108,7 +124,7 @@ export default function EditableTable({ columns, rows, onChange, addButtons = []
                         type="button"
                         className="btn-primary px-2 py-1 text-xs"
                         onClick={() => commit(idx)}
-                        title="Save"
+                        title="Save row"
                       >
                         ✓
                       </button>
@@ -117,7 +133,7 @@ export default function EditableTable({ columns, rows, onChange, addButtons = []
                         type="button"
                         className="btn-secondary px-2 py-1 text-xs"
                         onClick={() => startEdit(idx)}
-                        title="Edit"
+                        title="Edit row"
                       >
                         ✎
                       </button>
@@ -126,7 +142,7 @@ export default function EditableTable({ columns, rows, onChange, addButtons = []
                       type="button"
                       className="btn-danger px-2 py-1 text-xs"
                       onClick={() => remove(idx)}
-                      title="Delete"
+                      title="Delete row"
                     >
                       🗑
                     </button>
@@ -137,7 +153,9 @@ export default function EditableTable({ columns, rows, onChange, addButtons = []
           </tbody>
         </table>
       </div>
-      <p className="mt-1 text-xs text-muted">Tip: double-click a row to edit it.</p>
+      <p className="mt-1 text-xs text-muted">Tip: double-click a row to edit it, then ✓ to confirm the row. Click the section's Save button to persist all rows to disk.</p>
     </div>
   )
-}
+})
+
+export default EditableTable
